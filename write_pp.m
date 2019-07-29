@@ -1,6 +1,8 @@
 %
 % File: write_pp.m
 % Date: 10-Jan-03
+% Updated 13-May-19 by E. Graham
+%
 % Author: Kenneth Jensen <sanctity@mit.edu>
 %
 % Description:  Makes a Bruker pulse program according to the arrays
@@ -8,17 +10,17 @@
 %
 % Usage: write_pp( pulses, phases, delays, measure );
 %
-% pulses - 2xN array of pulses lengths where the first row
+% pulses - 3xN array of pulses lengths where the first row
 % represents the pulses on the hydrogen, and the second row
 % represents the pulses on the carbon.  the pulse lengths are in
 % terms of the 90 degree pulse length (ie. 1 = 90 degrees)
 %
-% phases - 2xN array of phases where the first row represents
+% phases - 3xN array of phases where the first row represents
 % the phases of the hydrogen's pulses and the second row
 % represents the phases of the carbon's pulses.  the phases
 % are in units of 90 degrees (ie. 1 = 90 degrees )
 %
-% delays - 1xN array of delays in millisec.  the Nth delay follows 
+% delays - 3xN array of delays in millisec.  the Nth delay follows 
 % the Nth set of pulses on the two spins.
 %
 % measure - determines which nucleus is measured, 0 for

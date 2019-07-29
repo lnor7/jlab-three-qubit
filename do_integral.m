@@ -72,7 +72,7 @@ iv = zeros(1,length(pf));	% default zero vector for integration results
 % compute phase correction
 pv = exp(i*(phases(1) + phases(2)*(fdat-pf(1)))*pi/180);
 spect = spect .* pv;
-
+I
 for k = 1:length(pf)	% loop over peaks
 	
   fpeak = pf(k);	

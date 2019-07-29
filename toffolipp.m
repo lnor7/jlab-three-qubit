@@ -14,7 +14,7 @@ pp3 = [0 0 0 0 0 0 0];
 pp3 = [pp3 1 2 1 0 0 0];
 pp3 = [pp3 0 0 0 0 0 0];
 
-%pulses with readout
+%pulses with readout on hydrogen
 pulses = [pp1 1;pp2 0;pp3 0].*2;
 
 %phases on hydrogen
@@ -44,4 +44,6 @@ delays = [0 tau12 0 tau12 0 0 0];
 delays = [delays tau13 0 tau13 0 0 0];
 delays = [delays tau12 0 tau12 0 0 0 0];
 
+%arguments: pw, phref (set in another program), pulses, phases, delays,
+%tavg, nuc
 htoffoli = NMRRunPulseProg(7.75/2,phref,pulses,phases,delays,0,1);

@@ -1,6 +1,8 @@
 %
 % File: NMRRunPulseProg.m
 % Date: 21-Jan-03
+% Updated 13-May-19 by E. Graham
+%
 % Author: Kenneth Jensen <sanctity@mit.edu>
 %
 % Description:  Given a pulse sequence, performs the complete
@@ -12,20 +14,22 @@
 %                           tavgflag, nucflag, d1 );
 %
 %
-% pw90 - 1x2 array of 90 degree pulse widths for the hydrogen and
-% carbon.  pw90 = [6.6 5] works well with 7% sample.
+% pw90 - 90 degree pulse width for the hydrogen. carbon calibration is more
+% complicated because of shaped pulses. pw90 = 7.75 works well with TCE.
 %
-% phref - 1x2 array of offset phases for the hydrogen and carbon
-% spectra.
+% phref - 3x2 array of offset phases for the hydrogen and carbon
+% spectra. zeroth-order and first-order calibrations.
 %
-% pulses - 2xN array of pulses lengths where the first row
+% pulses - 3xN array of pulses lengths where the first row
 % represents the pulses on the proton, and the second row
-% represents the pulses on the carbon the pulse lengths are in
+% represents the pulses on the first carbon, and the third row
+% represents the pulses on the other carbon. the pulse lengths are in
 % terms of the 90 degree pulse length (ie. 1 = 90 degrees)
 %
-% phases - 2xN array of phases where the first row represents
+% phases - 3xN array of phases where the first row represents
 % the phases of the proton pulses and the second row represents
-% the phases of the carbon pulses.  the phases are in units of 
+% the phases of the first carbon pulses and the third row represents
+% the phases of the second carbon pulses. the phases are in units of 
 % 90 degrees (ie. 1 = 90 degrees )
 %
 % delays - 1xN array of delays in millisec.  the Nth delay follows 
@@ -37,6 +41,7 @@
 % nucflag (optional) - 0 for both spectra
 %                      1 for just the hydrogen spectrum
 %                      2 for just the carbon spectrum
+%                      3 for the other carbon spectrum
 %
 % d1 (optional) - delay time between experiments in seconds
 %
@@ -52,15 +57,24 @@
 %                              before temporal averaging
 %   spect.hpeaks             - hydrogen peak integral values
 %   spect.hphase             - hydrogen receiver offset phase
-%   spect.cfreq              - carbon frequency data 
-%   spect.csfo               - carbon transmitter frequency
-%   spect.cspect             - carbon spectrum after temporal averaging
-%   spect.cfid               - carbon free inducation decay after
+%   spect.c1freq              - carbon frequency data 
+%   spect.c1sfo               - carbon transmitter frequency
+%   spect.c1spect             - carbon spectrum after temporal averaging
+%   spect.c1fid               - carbon free inducation decay after
 %                              temporal averaging
-%   spect.craw               - cell containing the carbon spectra
+%   spect.c1raw               - cell containing the carbon spectra
 %                              before temporal averaging
-%   spect.cpeaks             - carbon peak integral values
-%   spect.cphase             - carbon receiver offset phase
+%   spect.c1peaks             - carbon peak integral values
+%   spect.c1phase             - carbon receiver offset phase
+%   spect.c2freq              - carbon frequency data 
+%   spect.c2sfo               - carbon transmitter frequency
+%   spect.c2spect             - carbon spectrum after temporal averaging
+%   spect.c2fid               - carbon free inducation decay after
+%                              temporal averaging
+%   spect.c2raw               - cell containing the carbon spectra
+%                              before temporal averaging
+%   spect.c2peaks             - carbon peak integral values
+%   spect.c2phase             - carbon receiver offset phase
 %   spect.pp                 - pulse program structure
 %     spect.pp.pw90              - 90 degree pulse widths used
 %     spect.pp.pulses            - pulses
@@ -71,12 +85,11 @@
 %   spect.nucflag            - nucleus flag
 %
 %
-% Example: spect = NMRRunPulseProgram( [6.6 5], [0 0], [1; 0], [0; 0],
-%                                      [0], 1, 0 );
+% Example: spect = NMRRunPulseProgram( 7.75, [0 0; 0 0; 0 0], [1; 0; 0], [0; 0; 0],
+%                                      [0], 0, 1);
 %
-% This performs a quick test of the temporal averaging.  The pulse sequence
-% represents no pulses followed by a read-out pulse on the hydrogen.  The
-% output should be a hydrogen spectra with only one peak in the |00> position. 
+% This is a simple readout pulse on the hydrogen. It should show all four
+% peaks.
 %
 %
 
@@ -127,6 +140,7 @@ if nargin < 8
   end;
 end;
    
+%this currently isn't getting used, I just call from phref directly
 NMRSetCalibPhases(phref(1),phref(2),phref(3),phref(4));  % store phase references data in calib
    
 % empties cells
@@ -134,6 +148,9 @@ mysdc1 = {};
 mysdc2 = {};
 mysdh = {};
    
+%these are still two-qubit permutations. ignore them for now
+
+
 % partial cnot pulse sequence
 % (x1)-(tau)-(-y1)
 % 1/2J = 2.326 ms
